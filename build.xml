@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<project name="Bolota" default="main" basedir=".">
+    <!-- Project default build properties. -->
+    <property environment="env" />
+	<property name="src.home" value="${basedir}/src" />
+	<property name="build.dir" value="${basedir}/build" />
+	<property name="classes.dir" value="${build.dir}/classes" />
+	<property name="jar.dir" value="${build.dir}/jar" />
+	<property name="main-class" value="com.innoveworkshop.bolota.Main" />
+
+	<!-- Default target -->
+	<target name="main" depends="clean-build, run">
+		<description>Compiles and runs a clean build of the application</description>
+	</target>
+
+    <!-- Clean out compiled files. -->
+	<target name="clean">
+		<description>Deletes all compilation artifacts</description>
+		<delete dir="${build.dir}" />
+	</target>
+
+	<!-- Compiles the source files. -->
+	<target name="compile">
+		<description>Compiles the source files into classes</description>
+		<mkdir dir="${classes.dir}" />
+		<javac srcdir="${src.home}" destdir="${classes.dir}" />
+	</target>
+
+	<!-- Generates an executable JAR file. -->
+	<target name="jar" depends="compile">
+		<description>Generates an executable JAR file for the application</description>
+		<mkdir dir="${jar.dir}" />
+		<jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${classes.dir}">
+			<manifest>
+				<attribute name="Main-Class" value="${main-class}" />
+				<attribute name="Specification-Title" value="${ant.project.name}" />
+				<attribute name="Specification-Vendor" value="Innove Workshop" />
+			</manifest>
+		</jar>
+	</target>
+
+	<!-- Runs the built application. -->
+	<target name="run" depends="jar">
+		<description>Executes the application</description>
+		<java jar="${jar.dir}/${ant.project.name}.jar" fork="true" />
+	</target>
+
+	<!-- Does a clean build of the application. -->
+	<target name="clean-build" depends="clean, compile, jar">
+		<description>Creates a clean build</description>
+	</target>
+</project>
