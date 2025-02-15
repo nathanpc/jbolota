@@ -12,7 +12,7 @@ public class DateField extends Field {
 	private Date date;
 
 	/**
-	 * Initializes the base field with default values.
+	 * Initializes the date field with default values.
 	 *
 	 * @param parent Parent field object.
 	 * @param date   Timestamp represented by the field.
