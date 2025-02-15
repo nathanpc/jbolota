@@ -1,6 +1,7 @@
 package com.innoveworkshop.bolota;
 
 import com.innoveworkshop.bolota.ui.windows.MainWindow;
+import com.innoveworkshop.bolota.utils.ResourceManager;
 
 import javax.swing.*;
 import java.util.logging.Level;
@@ -18,7 +19,10 @@ public class Main {
 	 * @param args Command line arguments.
 	 */
 	public static void main(String[] args) {
-		System.out.println("Bolota!");
+		System.out.println("Bolota for Java");
+
+		// Implicitly load all our resources.
+		ResourceManager.getInstance();
 
 		// Show the application's main window.
 		setNativeLookAndFeel();

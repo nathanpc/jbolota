@@ -2,6 +2,7 @@ package com.innoveworkshop.bolota.ui.components;
 
 import com.innoveworkshop.bolota.models.Field;
 import com.innoveworkshop.bolota.models.fields.DateField;
+import com.innoveworkshop.bolota.utils.ResourceManager;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultTreeCellRenderer;
@@ -18,6 +19,11 @@ public class BolotaFieldRenderer extends DefaultTreeCellRenderer {
 	 */
 	public BolotaFieldRenderer() {
 		super();
+
+		// Initialize new defaults.
+		setLeafIcon(ResourceManager.getInstance().getBulletIcon());
+		setOpenIcon(ResourceManager.getInstance().getBulletIcon());
+		setClosedIcon(ResourceManager.getInstance().getBulletIcon());
 	}
 
 	@Override
@@ -29,7 +35,7 @@ public class BolotaFieldRenderer extends DefaultTreeCellRenderer {
 		// Sets the node's text to the field's text.
 		setText(field.getText());
 
-		// Handle the rendering of each field type.
+		// Handle the rendering of special field types.
 		if (field instanceof DateField) {
 			handleDateField((DateField)field);
 		}
@@ -43,11 +49,11 @@ public class BolotaFieldRenderer extends DefaultTreeCellRenderer {
 	 * @param field     Date field to be rendered.
 	 */
 	private void handleDateField(DateField field) {
-		// TODO: Set icon to calendar.
+		// Set icon to calendar.
+		setIcon(ResourceManager.getInstance().getCalendarIcon());
 
 		// Display the date and time alongside the field's text.
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 		setText("(" + sdf.format(field.getDate()) + ") " + field.getText());
 	}
-
 }
