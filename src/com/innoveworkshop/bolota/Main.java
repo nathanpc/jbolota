@@ -1,9 +1,15 @@
 package com.innoveworkshop.bolota;
 
+import com.innoveworkshop.bolota.models.Document;
+import com.innoveworkshop.bolota.models.Field;
+import com.innoveworkshop.bolota.models.fields.DateField;
+import com.innoveworkshop.bolota.models.fields.IconField;
+import com.innoveworkshop.bolota.models.fields.TextField;
 import com.innoveworkshop.bolota.ui.windows.MainWindow;
 import com.innoveworkshop.bolota.utils.ResourceManager;
 
 import javax.swing.*;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,7 +25,10 @@ public class Main {
 	 * @param args Command line arguments.
 	 */
 	public static void main(String[] args) {
+		final Document document;
+
 		System.out.println("Bolota for Java");
+		document = getExampleDocument();
 
 		// Implicitly load all our resources.
 		ResourceManager.getInstance();
@@ -30,6 +39,7 @@ public class Main {
 			public void run() {
 				MainWindow window = new MainWindow();
 				window.setVisible(true);
+				window.getViewer().openDocument(document);
 			}
 		});
 	}
@@ -61,4 +71,29 @@ public class Main {
 		}
 	}
 
+	/**
+	 * Generates an example Bolota document for testing purposes.
+	 *
+	 * @return Example bolota document.
+	 */
+	private static Document getExampleDocument() {
+		// Setup document.
+		Document doc = new Document();
+		doc.setTitle("Example document");
+		doc.setSubtitle("Just a simple example of a document.");
+
+		// Add topics to document.
+		doc.appendChild(new TextField("First topic"));
+		doc.appendChild(new TextField("Second topic"));
+		Field field1 = new TextField("Third topic");
+		field1.appendChild(new TextField("Sub-item of third topic"));
+		field1.appendChild(new IconField(null, ResourceManager.getInstance().fieldIcons.get(10),
+				"Example icon"));
+		field1.appendChild(new TextField("Another sub-item of third topic"));
+		doc.appendChild(field1);
+		doc.appendChild(new DateField(null, new Date(), "A sample date topic."));
+		doc.appendChild(new TextField("Fourth topic"));
+
+		return doc;
+	}
 }

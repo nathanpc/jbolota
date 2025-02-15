@@ -2,6 +2,7 @@ package com.innoveworkshop.bolota.ui.components;
 
 import com.innoveworkshop.bolota.models.Field;
 import com.innoveworkshop.bolota.models.fields.DateField;
+import com.innoveworkshop.bolota.models.fields.IconField;
 import com.innoveworkshop.bolota.utils.ResourceManager;
 
 import javax.swing.*;
@@ -38,6 +39,8 @@ public class BolotaFieldRenderer extends DefaultTreeCellRenderer {
 		// Handle the rendering of special field types.
 		if (field instanceof DateField) {
 			handleDateField((DateField)field);
+		} else if (field instanceof IconField) {
+			setIcon(((IconField)field).getIcon());
 		}
 
 		return this;
