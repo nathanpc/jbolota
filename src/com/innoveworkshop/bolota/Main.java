@@ -2,6 +2,7 @@ package com.innoveworkshop.bolota;
 
 import com.innoveworkshop.bolota.models.Document;
 import com.innoveworkshop.bolota.models.Field;
+import com.innoveworkshop.bolota.models.fields.BlankField;
 import com.innoveworkshop.bolota.models.fields.DateField;
 import com.innoveworkshop.bolota.models.fields.IconField;
 import com.innoveworkshop.bolota.models.fields.TextField;
@@ -93,6 +94,7 @@ public class Main {
 		field1.appendChild(new TextField("Another sub-item of third topic"));
 		doc.appendChild(field1);
 		doc.appendChild(new DateField(null, Calendar.getInstance(), "A sample date topic."));
+		doc.appendChild(new BlankField());
 		doc.appendChild(new TextField("Fourth topic"));
 
 		return doc;

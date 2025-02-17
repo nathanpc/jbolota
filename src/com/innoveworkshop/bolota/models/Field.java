@@ -54,8 +54,12 @@ public abstract class Field implements MutableTreeNode {
 		bytes.put(type);
 		bytes.put(getDepth());
 		bytes.putShort(getLength());
-		bytes.putShort((short)text.getUTF8Length());
-		bytes.put(text.getBytes());
+		if (text != null) {
+			bytes.putShort((short)text.getUTF8Length());
+			bytes.put(text.getBytes());
+		} else {
+			bytes.putShort((short)0);
+		}
 
 		return bytes;
 	}
