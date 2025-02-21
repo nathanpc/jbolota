@@ -1,7 +1,6 @@
 package com.innoveworkshop.bolota.models;
 
 import com.innoveworkshop.bolota.utils.UString;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
@@ -39,7 +38,14 @@ public abstract class Field implements MutableTreeNode {
 	 *
 	 * @return Binary representation of the object as needed for writing to a file.
 	 */
-	public ByteBuffer getBytes() {
+	public abstract ByteBuffer getBytes();
+
+	/**
+	 * Gets the bytes relative to the base of this field as they should be written to a file.
+	 *
+	 * @return Binary representation of the base object as needed for writing to a file.
+	 */
+	public ByteBuffer getBaseBytes() {
 		// Allocate our LE bytes buffer.
 		ByteBuffer bytes = ByteBuffer.allocate(getLength());
 		bytes.order(ByteOrder.LITTLE_ENDIAN);
@@ -59,7 +65,14 @@ public abstract class Field implements MutableTreeNode {
 	 *
 	 * @return Length of the field in bytes including its header and data.
 	 */
-	public short getLength() {
+	public abstract short getLength();
+
+	/**
+	 * Gets the length of the base of the field in its binary form.
+	 *
+	 * @return Length of the base field in bytes including its header and data.
+	 */
+	public short getBaseLength() {
 		// Type (U8) + Depth (U8) + Length (U16) + Text Length (U16) = 6.
 		return (short)(6 + text.getUTF8Length());
 	}

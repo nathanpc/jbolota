@@ -9,6 +9,7 @@ import com.innoveworkshop.bolota.ui.windows.MainWindow;
 import com.innoveworkshop.bolota.utils.ResourceManager;
 
 import javax.swing.*;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -91,7 +92,7 @@ public class Main {
 				"Example icon"));
 		field1.appendChild(new TextField("Another sub-item of third topic"));
 		doc.appendChild(field1);
-		doc.appendChild(new DateField(null, new Date(), "A sample date topic."));
+		doc.appendChild(new DateField(null, Calendar.getInstance(), "A sample date topic."));
 		doc.appendChild(new TextField("Fourth topic"));
 
 		return doc;

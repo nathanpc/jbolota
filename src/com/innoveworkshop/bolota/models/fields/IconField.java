@@ -4,6 +4,8 @@ import com.innoveworkshop.bolota.models.Field;
 import com.innoveworkshop.bolota.models.resources.FieldIcon;
 import com.innoveworkshop.bolota.utils.UString;
 
+import java.nio.ByteBuffer;
+
 /**
  * A Bolota text field with an associated icon.
  */
@@ -49,5 +51,19 @@ public class IconField extends Field {
 	 */
 	public void setIcon(FieldIcon icon) {
 		this.icon = icon;
+	}
+
+	@Override
+	public ByteBuffer getBytes() {
+		// Get the base field and the icon ID.
+		ByteBuffer bytes =  getBaseBytes();
+		bytes.put(icon.id);
+
+		return bytes;
+	}
+
+	@Override
+	public short getLength() {
+		return (short)(getBaseLength() + 1);
 	}
 }

@@ -49,7 +49,7 @@ public class BolotaFieldRenderer extends DefaultTreeCellRenderer {
 	/**
 	 * Handles the rendering of a {@link DateField} node.
 	 *
-	 * @param field     Date field to be rendered.
+	 * @param field Date field to be rendered.
 	 */
 	private void handleDateField(DateField field) {
 		// Set icon to calendar.
@@ -57,6 +57,6 @@ public class BolotaFieldRenderer extends DefaultTreeCellRenderer {
 
 		// Display the date and time alongside the field's text.
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-		setText("(" + sdf.format(field.getDate()) + ") " + field.getText());
+		setText("(" + sdf.format(field.getDate().getTime()) + ") " + field.getText());
 	}
 }

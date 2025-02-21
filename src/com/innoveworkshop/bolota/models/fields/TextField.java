@@ -3,11 +3,12 @@ package com.innoveworkshop.bolota.models.fields;
 import com.innoveworkshop.bolota.models.Field;
 import com.innoveworkshop.bolota.utils.UString;
 
+import java.nio.ByteBuffer;
+
 /**
  * The simplest Bolota text-type field.
  */
 public class TextField extends Field {
-
 	/**
 	 * Initializes a simple text field.
 	 *
@@ -35,5 +36,15 @@ public class TextField extends Field {
 	 */
 	public TextField(String text) {
 		this(null, text);
+	}
+
+	@Override
+	public ByteBuffer getBytes() {
+		return getBaseBytes();
+	}
+
+	@Override
+	public short getLength() {
+		return getBaseLength();
 	}
 }

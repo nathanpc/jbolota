@@ -4,8 +4,9 @@ import com.innoveworkshop.bolota.models.fields.DateField;
 import com.innoveworkshop.bolota.models.fields.TextField;
 import com.innoveworkshop.bolota.utils.UString;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Calendar;
 
 /**
  * A Bolota document object representation.
@@ -22,7 +23,7 @@ public class Document extends Field {
 		super((byte)0, null, new UString("Document Root"));
 		title = new TextField(null, "");
 		subtitle = new TextField(null, "");
-		date = new DateField(null, new Date(), "");
+		date = new DateField(null, Calendar.getInstance(), "");
 	}
 
 	/**
@@ -66,7 +67,7 @@ public class Document extends Field {
 	 *
 	 * @return Date and time of the document's creation.
 	 */
-	public Date getDate() {
+	public Calendar getDate() {
 		return this.date.getDate();
 	}
 
@@ -75,7 +76,7 @@ public class Document extends Field {
 	 *
 	 * @param dt New document's creation date and time.
 	 */
-	public void setDate(Date dt) {
+	public void setDate(Calendar dt) {
 		this.date.setDate(dt);
 	}
 
@@ -86,5 +87,21 @@ public class Document extends Field {
 	 */
 	public ArrayList<Field> getTopics() {
 		return children;
+	}
+
+	/**
+	 * Not implemented.
+	 */
+	@Override
+	public ByteBuffer getBytes() {
+		throw new RuntimeException("Not implemented");
+	}
+
+	/**
+	 * Not implemented.
+	 */
+	@Override
+	public short getLength() {
+		throw new RuntimeException("Not implemented");
 	}
 }
