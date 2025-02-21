@@ -1,5 +1,6 @@
 package com.innoveworkshop.bolota.models.fields;
 
+import com.innoveworkshop.bolota.exceptions.InvalidFieldTypeException;
 import com.innoveworkshop.bolota.models.Field;
 import com.innoveworkshop.bolota.utils.UString;
 
@@ -16,7 +17,7 @@ public class TextField extends Field {
 	 * @param text   Text associated with the field.
 	 */
 	public TextField(Field parent, UString text) {
-		super((byte)'T', parent, text);
+		super(Field.TYPE_TEXT, parent, text);
 	}
 
 	/**
@@ -36,6 +37,16 @@ public class TextField extends Field {
 	 */
 	public TextField(String text) {
 		this(null, text);
+	}
+
+	@Override
+	public byte fromBytes(ByteBuffer bytes) {
+		return super.fromBaseBytes(bytes);
+	}
+
+	@Override
+	public void fromBytes(Field parent, ByteBuffer bytes) {
+		super.fromBaseBytes(parent, bytes);
 	}
 
 	@Override

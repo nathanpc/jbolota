@@ -1,10 +1,13 @@
 package com.innoveworkshop.bolota.models.fields;
 
 import com.innoveworkshop.bolota.models.Field;
+import com.innoveworkshop.bolota.utils.ResourceManager;
 import com.innoveworkshop.bolota.utils.UString;
 
 import java.nio.ByteBuffer;
 import java.util.Calendar;
+import java.util.SimpleTimeZone;
+import java.util.TimeZone;
 
 /**
  * A Bolota field representing a timestamp.
@@ -20,7 +23,7 @@ public class DateField extends Field {
 	 * @param text   Text associated with the field.
 	 */
 	public DateField(Field parent, Calendar date, UString text) {
-		super((byte)'d', parent, text);
+		super(Field.TYPE_DATE, parent, text);
 		this.date = date;
 	}
 
@@ -33,6 +36,15 @@ public class DateField extends Field {
 	 */
 	public DateField(Field parent, Calendar date, String text) {
 		this(parent, date, new UString(text));
+	}
+
+	/**
+	 * Gets a {@link Calendar} instance with the UTC timezone.
+	 *
+	 * @return Calendar instance in UTC.
+	 */
+	public static Calendar getCalendarUTC() {
+		return Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 	}
 
 	/**
@@ -51,6 +63,39 @@ public class DateField extends Field {
 	 */
 	public void setDate(Calendar date) {
 		this.date = date;
+	}
+
+	@Override
+	public byte fromBytes(ByteBuffer bytes) {
+		// Read field base.
+		byte depth = super.fromBaseBytes(bytes);
+
+		// Read in the individual parts of the timestamp.
+		short year = bytes.getShort();
+		byte month = (byte)(bytes.get() - 1);
+		byte day = bytes.get();
+		byte hour = bytes.get();
+		byte minute = bytes.get();
+		byte second = bytes.get();
+		bytes.get();  // Reserved.
+
+		// Set up our internal timestamp object.
+		date = getCalendarUTC();
+		date.set(year, month, day, hour, minute, second);
+
+		return depth;
+	}
+
+	@Override
+	public void fromBytes(Field parent, ByteBuffer bytes) {
+		super.fromBaseBytes(parent, bytes);
+	}
+
+	@Override
+	public void copy(Field field) {
+		super.copy(field);
+		if (field instanceof DateField)
+			date = ((DateField)field).date;
 	}
 
 	@Override

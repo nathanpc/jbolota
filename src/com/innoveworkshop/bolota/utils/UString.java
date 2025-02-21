@@ -1,6 +1,7 @@
 package com.innoveworkshop.bolota.utils;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 
 /**
  * A universal string type that allows for easy conversion to and from UTF-8.
@@ -18,6 +19,15 @@ public class UString implements Comparable<UString> {
 	public UString(String str) {
 		this.strUTF8 = null;
 		set(str);
+	}
+
+	/**
+	 * Initializes the universal string from an array of UTF-8 bytes.
+	 *
+	 * @param bytes Array of characters in UTF-8 encoding.
+	 */
+	public UString(byte[] bytes) {
+		set(bytes);
 	}
 
 	/**
@@ -64,6 +74,21 @@ public class UString implements Comparable<UString> {
 	public void set(String str) {
 		this.str = str;
 		this.synced = false;
+	}
+
+	/**
+	 * Sets the string's text from an array of UTF-8 bytes.
+	 *
+	 * @param bytes Array of characters in UTF-8 encoding.
+	 */
+	public void set(byte[] bytes) {
+		this.strUTF8 = bytes;
+		this.synced = true;
+		try {
+			this.str = new String(bytes, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public int compareTo(UString ustr) {

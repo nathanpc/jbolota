@@ -1,5 +1,10 @@
 package com.innoveworkshop.bolota.models;
 
+import com.innoveworkshop.bolota.exceptions.InvalidFieldTypeException;
+import com.innoveworkshop.bolota.models.fields.BlankField;
+import com.innoveworkshop.bolota.models.fields.DateField;
+import com.innoveworkshop.bolota.models.fields.IconField;
+import com.innoveworkshop.bolota.models.fields.TextField;
 import com.innoveworkshop.bolota.utils.UString;
 
 import javax.swing.tree.MutableTreeNode;
@@ -20,6 +25,26 @@ public abstract class Field implements MutableTreeNode {
 	protected final ArrayList<Field> children;
 
 	/**
+	 * Bolota field type character for text.
+	 */
+	public static final byte TYPE_TEXT = 'T';
+
+	/**
+	 * Bolota field type character for timestamp.
+	 */
+	public static final byte TYPE_DATE = 'd';
+
+	/**
+	 * Bolota field type character for icon.
+	 */
+	public static final byte TYPE_ICON = 'I';
+
+	/**
+	 * Bolota field type character for blank.
+	 */
+	public static final byte TYPE_BLANK = '0';
+
+	/**
 	 * Initializes the base field with default values.
 	 *
 	 * @param type   Field type identifier character.
@@ -31,6 +56,149 @@ public abstract class Field implements MutableTreeNode {
 		this.text = text;
 		this.parent = parent;
 		this.children = new ArrayList<Field>();
+	}
+
+	/**
+	 * Constructs a brand new base field with the values from another one.
+	 *
+	 * @param field Reference field to be copied over.
+	 */
+	public Field(Field field) {
+		this(field.type, field.parent, new UString(""));
+		copy(field);
+	}
+
+	/**
+	 * Populates the field object based on the {@link ByteBuffer} that was read from a Bolota
+	 * document file.
+	 *
+	 * @param bytes Buffer read from a document that contains a single field entry.
+	 */
+	public abstract byte fromBytes(ByteBuffer bytes);
+
+	/**
+	 * Populates the field object based on the {@link ByteBuffer} that was read from a Bolota
+	 * document file and appends it automatically to parent field that's determined by the
+	 * depth read.
+	 *
+	 * <p></p>
+	 *
+	 * <p><b style="color: red;">This method will append the field automatically to the right
+	 * parent field.</b></p>
+	 *
+	 * @param parent Current parent field.
+	 * @param bytes  Buffer read from a document that contains a single field entry.
+	 */
+	public abstract void fromBytes(Field parent, ByteBuffer bytes);
+
+	/**
+	 * Populates the field object base from a {@link ByteBuffer} that was read from a Bolota
+	 * document file.
+	 *
+	 * @param bytes Buffer read from a document that contains a single field entry.
+	 *
+	 * @return Depth of the field as read from the byte buffer.
+	 */
+	protected byte fromBaseBytes(ByteBuffer bytes) {
+		// Read field base.
+		byte depth = bytes.get();
+		short fieldLength = bytes.getShort();
+		short textLength = bytes.getShort();
+		if (textLength > 0) {
+			byte[] unicodeString = new byte[textLength];
+			bytes.get(unicodeString);
+			if (text != null)
+				text.set(unicodeString);
+		}
+
+		return depth;
+	}
+
+	/**
+	 * Populates the field object base from a {@link ByteBuffer} that was read from a Bolota
+	 * document file and appends it automatically to parent field that's determined by the
+	 * depth read.
+	 *
+	 * <p></p>
+	 *
+	 * <p><b style="color: red;">This method will append the field automatically to the right
+	 * parent field.</b></p>
+	 *
+	 * @param parent Current parent field.
+	 * @param bytes  Buffer read from a document that contains a single field entry.
+	 */
+	protected void fromBaseBytes(Field parent, ByteBuffer bytes) {
+		// Read field base.
+		byte depth = fromBytes(bytes);
+
+		// Select the right parent based on depth.
+		if (depth < parent.getDepth()) {
+			// Next topic of a parent field.
+			while (depth != parent.getDepth())
+				parent = parent.getParent();
+		} else if (depth > parent.getDepth()) {
+			// Child of the last field.
+			parent = parent.getLastChild();
+		}
+
+		// Append this field to its rightful parent.
+		parent.appendChild(this);
+	}
+
+	/**
+	 * Gets a proper field object based on the {@link ByteBuffer} that was read from a Bolota
+	 * document file.
+	 *
+	 * @param parent Current parent field.
+	 * @param bytes  Buffer read from a document that contains a single field entry.
+	 *
+	 * @return Parsed field object of the correct type for the read field or {@code null} if
+	 *         we have reached the end of the buffer.
+	 *
+	 * @throws InvalidFieldTypeException whenever an invalid field type is found when reading.
+	 */
+	protected static Field createFromBytes(Field parent, ByteBuffer bytes) throws InvalidFieldTypeException {
+		Field field = null;
+
+		// Check if we have reached the end of the buffer.
+		if (!bytes.hasRemaining())
+			return null;
+
+		// Create field based on type.
+		byte type = bytes.get();
+		switch (type) {
+			case TYPE_TEXT:
+				field = new TextField(null, new UString(""));
+				break;
+			case TYPE_DATE:
+				field = new DateField(null, null, new UString(""));
+				break;
+			case TYPE_ICON:
+				field = new IconField(null, null, new UString(""));
+				break;
+			case TYPE_BLANK:
+				field = new BlankField(null);
+				break;
+			default:
+				throw new InvalidFieldTypeException(type);
+		}
+
+		// Populate the field.
+		field.fromBytes(parent, bytes);
+
+		return field;
+	}
+
+	/**
+	 * Copies internal values from another field object into ours.
+	 *
+	 * @param field Reference field to be copied over.
+	 */
+	public void copy(Field field) {
+		text.set(field.text.toString());
+		parent = field.parent;
+		children.clear();
+		children.addAll(field.children);
 	}
 
 	/**
@@ -133,6 +301,15 @@ public abstract class Field implements MutableTreeNode {
 	 */
 	public void setText(String text) {
 		this.text.set(text);
+	}
+
+	/**
+	 * Gets the last child of the field.
+	 *
+	 * @return Last child of the field.
+	 */
+	public Field getLastChild() {
+		return getChildAt(getChildCount() - 1);
 	}
 
 	///

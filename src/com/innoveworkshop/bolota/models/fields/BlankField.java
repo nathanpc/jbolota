@@ -15,7 +15,7 @@ public class BlankField extends Field {
 	 * @param parent Parent field object.
 	 */
 	public BlankField(Field parent) {
-		super((byte)'0', parent, null);
+		super(Field.TYPE_BLANK, parent, null);
 	}
 
 	/**
@@ -23,6 +23,16 @@ public class BlankField extends Field {
 	 */
 	public BlankField() {
 		this(null);
+	}
+
+	@Override
+	public byte fromBytes(ByteBuffer bytes) {
+		return super.fromBaseBytes(bytes);
+	}
+
+	@Override
+	public void fromBytes(Field parent, ByteBuffer bytes) {
+		super.fromBaseBytes(parent, bytes);
 	}
 
 	@Override

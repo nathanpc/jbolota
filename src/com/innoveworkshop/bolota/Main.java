@@ -10,6 +10,8 @@ import com.innoveworkshop.bolota.ui.windows.MainWindow;
 import com.innoveworkshop.bolota.utils.ResourceManager;
 
 import javax.swing.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.logging.Level;
@@ -30,7 +32,15 @@ public class Main {
 		final Document document;
 
 		System.out.println("Bolota for Java");
-		document = getExampleDocument();
+		if (args.length > 0) {
+			try {
+				document = new Document(new File(args[0]));
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		} else {
+			document = getExampleDocument();
+		}
 
 		// Implicitly load all our resources.
 		ResourceManager.getInstance();
@@ -93,7 +103,7 @@ public class Main {
 				"Example icon"));
 		field1.appendChild(new TextField("Another sub-item of third topic"));
 		doc.appendChild(field1);
-		doc.appendChild(new DateField(null, Calendar.getInstance(), "A sample date topic."));
+		doc.appendChild(new DateField(null, DateField.getCalendarUTC(), "A sample date topic."));
 		doc.appendChild(new BlankField());
 		doc.appendChild(new TextField("Fourth topic"));
 
