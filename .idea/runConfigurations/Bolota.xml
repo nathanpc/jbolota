@@ -1,0 +1,13 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Bolota" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="com.innoveworkshop.bolota.Main" />
+    <module name="Bolota" />
+    <option name="PROGRAM_PARAMETERS" value="$ProjectFileDir$/examples/every_field.bol" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+      <option name="BuildArtifacts" enabled="true">
+        <artifact name="Bolota:jar" />
+      </option>
+    </method>
+  </configuration>
+</component>
