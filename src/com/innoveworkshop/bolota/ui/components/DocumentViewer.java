@@ -45,5 +45,15 @@ public class DocumentViewer extends JTree {
 		// Load the new document into the tree.
 		this.doc = doc;
 		setModel(new DefaultTreeModel(doc, false));
+		expandAllNodes();
+	}
+
+	/**
+	 * Expands all nodes in the viewer.
+	 */
+	public void expandAllNodes() {
+		for (int i = 0; i < getRowCount(); i++) {
+			expandRow(i);
+		}
 	}
 }
