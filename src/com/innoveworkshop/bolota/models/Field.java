@@ -9,6 +9,7 @@ import com.innoveworkshop.bolota.utils.UString;
 
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -86,10 +87,10 @@ public abstract class Field implements MutableTreeNode {
 	 * <p><b style="color: red;">This method will append the field automatically to the right
 	 * parent field.</b></p>
 	 *
-	 * @param parent Current parent field.
-	 * @param bytes  Buffer read from a document that contains a single field entry.
+	 * @param previous Previous field that was added to the document.
+	 * @param bytes    Buffer read from a document that contains a single field entry.
 	 */
-	public abstract void fromBytes(Field parent, ByteBuffer bytes);
+	public abstract void fromBytes(Field previous, ByteBuffer bytes);
 
 	/**
 	 * Populates the field object base from a {@link ByteBuffer} that was read from a Bolota
@@ -124,21 +125,29 @@ public abstract class Field implements MutableTreeNode {
 	 * <p><b style="color: red;">This method will append the field automatically to the right
 	 * parent field.</b></p>
 	 *
-	 * @param parent Current parent field.
-	 * @param bytes  Buffer read from a document that contains a single field entry.
+	 * @param previous Previous field that was added to the document.
+	 * @param bytes    Buffer read from a document that contains a single field entry.
 	 */
-	protected void fromBaseBytes(Field parent, ByteBuffer bytes) {
+	protected void fromBaseBytes(Field previous, ByteBuffer bytes) {
 		// Read field base.
 		byte depth = fromBytes(bytes);
 
+		// Get the base parent.
+		Field parent = previous;
+		if (!parent.isDocumentRoot())
+			parent = previous.getParent();
+
 		// Select the right parent based on depth.
-		if (depth < parent.getDepth()) {
+		if (depth < previous.getDepth()) {
 			// Next topic of a parent field.
-			while (depth != parent.getDepth())
-				parent = parent.getParent();
-		} else if (depth > parent.getDepth()) {
+			while (depth != previous.getDepth())
+				previous = previous.getParent();
+			parent = previous.getParent();
+		} else if (depth > previous.getDepth()) {
 			// Child of the last field.
-			parent = parent.getLastChild();
+			if ((depth - previous.getDepth()) > 1)
+				throw new RuntimeException("Field depth forward jump greater than 1");
+			parent = previous;
 		}
 
 		// Append this field to its rightful parent.
@@ -149,15 +158,15 @@ public abstract class Field implements MutableTreeNode {
 	 * Gets a proper field object based on the {@link ByteBuffer} that was read from a Bolota
 	 * document file.
 	 *
-	 * @param parent Current parent field.
-	 * @param bytes  Buffer read from a document that contains a single field entry.
+	 * @param previous Previous field that was added to the document.
+	 * @param bytes    Buffer read from a document that contains a single field entry.
 	 *
 	 * @return Parsed field object of the correct type for the read field or {@code null} if
 	 *         we have reached the end of the buffer.
 	 *
 	 * @throws InvalidFieldTypeException whenever an invalid field type is found when reading.
 	 */
-	protected static Field createFromBytes(Field parent, ByteBuffer bytes) throws InvalidFieldTypeException {
+	protected static Field createFromBytes(Field previous, ByteBuffer bytes) throws InvalidFieldTypeException {
 		Field field = null;
 
 		// Check if we have reached the end of the buffer.
@@ -184,7 +193,7 @@ public abstract class Field implements MutableTreeNode {
 		}
 
 		// Populate the field.
-		field.fromBytes(parent, bytes);
+		field.fromBytes(previous, bytes);
 
 		return field;
 	}
@@ -310,6 +319,15 @@ public abstract class Field implements MutableTreeNode {
 	 */
 	public Field getLastChild() {
 		return getChildAt(getChildCount() - 1);
+	}
+
+	/**
+	 * Checks if the field is actually the document root and requires special treatment.
+	 *
+	 * @return {@code true} if the field is actually the document root object.
+	 */
+	public boolean isDocumentRoot() {
+		return false;
 	}
 
 	///

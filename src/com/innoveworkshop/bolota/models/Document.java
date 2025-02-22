@@ -110,12 +110,10 @@ public class Document extends Field {
 			buffer = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN);
 
 			// Parse the topics section.
-			Field parent = this;
+			Field previousTopic = this;
 			Field topic;
-			while ((topic = Field.createFromBytes(parent, buffer)) != null) {
-				// Parent topic changed.
-				if (topic.getParent() != parent)
-					parent = topic.getParent();
+			while ((topic = Field.createFromBytes(previousTopic, buffer)) != null) {
+				previousTopic = topic;
 			}
 
 			// Check if we have reached the end of the file.
@@ -188,6 +186,11 @@ public class Document extends Field {
 	 */
 	public ArrayList<Field> getTopics() {
 		return children;
+	}
+
+	@Override
+	public boolean isDocumentRoot() {
+		return true;
 	}
 
 	/**

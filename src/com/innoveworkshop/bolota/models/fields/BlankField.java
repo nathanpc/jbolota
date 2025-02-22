@@ -31,8 +31,8 @@ public class BlankField extends Field {
 	}
 
 	@Override
-	public void fromBytes(Field parent, ByteBuffer bytes) {
-		super.fromBaseBytes(parent, bytes);
+	public void fromBytes(Field previous, ByteBuffer bytes) {
+		super.fromBaseBytes(previous, bytes);
 	}
 
 	@Override
